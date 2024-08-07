@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personality Quiz</title>
+    <style>
+        body {
+            background-color: #1a1a1d;
+            color: #c5c6c7;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+        }
+        h1 {
+            color: #66fcf1;
+            text-shadow: 0 0 10px #66fcf1, 0 0 20px #45a29e;
+            display: flex;
+            align-items: center;
+        }
+        .emoji {
+            font-size: 2em;
+            margin-right: 10px;
+        }
+        .form-container {
+            background: linear-gradient(45deg, #0b0c10, #1f2833);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            margin-top: 20px;
+        }
+        .slider-container {
+            margin: 20px 0;
+        }
+        .slider {
+            width: 100%;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 10px;
+            background: #c5c6c7;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+            border-radius: 5px;
+        }
+        .slider:hover {
+            opacity: 1;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #45a29e;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #45a29e, 0 0 20px #66fcf1;
+        }
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: #45a29e;
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #45a29e, 0 0 20px #66fcf1;
+        }
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+        }
+        button {
+            background-color: #45a29e;
+            color: #1f2833;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1em;
+            box-shadow: 0 0 10px #45a29e, 0 0 20px #66fcf1;
+        }
+        button:hover {
+            background-color: #66fcf1;
+            color: #0b0c10;
+        }
+    </style>
+</head>
+<body>
+    <h1><img src="https://via.placeholder.com/50" alt="Cartoon" class="emoji"> Personality Quiz</h1>
+    <div class="form-container">
+        <form method="post" action="{% url 'index' %}">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="slider-container">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    <div class="slider-labels">
+                        <span>Option 1</span>
+                        <span>Option 2</span>
+                    </div>
+                    <input type="range" class="slider" min="1" max="2" step="0.01" value="1.5" data-input="{{ field.name }}">
+                    {{ field }}
+                </div>
+            {% endfor %}
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sliders = document.querySelectorAll('.slider');
+            sliders.forEach(slider => {
+                // Initialize slider in the middle
+                slider.value = 1.5;
+                const hiddenInput = document.querySelector(`#id_${slider.dataset.input}`);
+                hiddenInput.value = 1; // Default to option 1 since it's in the middle initially
+                slider.addEventListener('input', function () {
+                    hiddenInput.value = slider.value < 1.5 ? 1 : 2;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

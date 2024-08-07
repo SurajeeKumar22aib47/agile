@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Quiz</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<style>
+    body {
+    background-color: #1a1a1d;
+    color: #c5c6c7;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+    position: relative;
+}
+
+.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Keyframes for animating emojis */
+@keyframes moveEmoji {
+    0% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-50vh) rotate(180deg); }
+    100% { transform: translateY(-100vh) rotate(360deg); }
+}
+
+/* Emoji styles */
+.background::after {
+    content: "🚀";
+    position: absolute;
+    top: -10vh;
+    left: calc(10% + 10vw);
+    font-size: 3rem;
+    opacity: 0.8;
+    animation: moveEmoji 10s linear infinite;
+}
+
+.background::before {
+    content: "🤖";
+    position: absolute;
+    top: -20vh;
+    left: calc(70% + 5vw);
+    font-size: 2.5rem;
+    opacity: 0.7;
+    animation: moveEmoji 8s linear infinite;
+}
+
+.form-container {
+    background: linear-gradient(135deg, #2f2f2f, #0a0a0a);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    margin-top: 20px;
+    width: 80%;
+    max-width: 600px;
+    backdrop-filter: blur(10px); /* Adds a slight blur effect for better contrast */
+    position: relative;
+    z-index: 1; /* Ensure the form is above the background */
+}
+
+h2, h3 {
+    color: #66fcf1;
+    text-shadow: 0 0 10px #66fcf1, 0 0 20px #45a29e;
+}
+
+p {
+    margin-bottom: 10px;
+}
+
+input[type="radio"] {
+    margin-right: 5px;
+}
+
+button {
+    background-color: #45a29e;
+    color: #1f2833;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 1em;
+    box-shadow: 0 0 10px #45a29e, 0 0 20px #66fcf1;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #66fcf1;
+    color: #0b0c10;
+}
+
+</style>
+<body>
+    <div class="background">
+        <!-- Emojis will be added dynamically via CSS -->
+    </div>
+
+    <div class="form-container">
+        <form method="post" action="{% url 'careerquiz' %}">
+            {% csrf_token %}
+            <h2>Career Quiz</h2>
+
+            {% for category, questions in questions.items %}
+                <h3>{{ category|title }} Questions</h3>
+                {% for question in questions %}
+                    <p>{{ question.question }}</p>
+                    {% for option in question.options %}
+                        <input type="radio" id="{{ category }}_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}" name="{{ category }}_{{ forloop.parentloop.counter0 }}" value="{{ option }}">
+                        <label for="{{ category }}_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}">{{ option }}</label><br>
+                    {% endfor %}
+                {% endfor %}
+            {% endfor %}
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combined Results</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to external CSS file -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script> <!-- jsPDF library -->
+</head>
+{% load static %}
+<style>
+    body {
+        background-color: #1a1a1d;
+        color: #c5c6c7;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #2f2f2f;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        border-radius: 10px;
+    }
+
+    header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    h1 {
+        color: #66fcf1;
+        display: flex;
+        align-items: center; /* Center align text and image vertically */
+    }
+
+    h1 img, h2 img {
+        margin-right: 10px; /* Adjust spacing between image and text */
+        max-width: 50px; /* Limit image size */
+        border-radius: 50%; /* Make image round */
+    }
+
+    section {
+        margin-bottom: 30px;
+    }
+
+    h2 {
+        color: #45a29e;
+        display: flex;
+        align-items: center; /* Center align text and image vertically */
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    li {
+        margin-bottom: 5px;
+    }
+
+    a {
+        color: #66fcf1;
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    p {
+        margin-bottom: 10px;
+    }
+
+    .profile-img {
+        display: block;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        max-width: 150px;
+    }
+
+    .chart-container {
+        margin-top: 20px;
+    }
+</style>
+<body>
+    <div class="container">
+        <header>
+            <h1><img src="{% static 'logo.png' %}" alt="Header Image"> Combined Results</h1>
+        </header>
+
+        <section class="profile">
+            <img src="{% static 'profile.webp' %}" alt="Profile Picture" class="profile-img">
+        </section>
+        
+        <section class="personality">
+            <h2><img src="{% static 'p_logo.jpg' %}" alt="Personality Icon"> Your Personality Type: {{ personality_type.code }}</h2>
+            <p>Description: {{ personality_type.description }}</p>
+        </section>
+        
+        <section class="career">
+            <h2><img src="{% static 'c_logo.jpg' %}" alt="Career Icon"> Career Quiz Results:</h2>
+            <div class="chart-container">
+                <canvas id="careerChart"></canvas>
+            </div>
+        </section>
+        
+        <section class="jobs">
+            <h2><img src="{% static 'j_logo.jpeg' %}" alt="Jobs Icon"> Suggested Careers Based on Highest Score Category ({{ highest_score_category }}):</h2>
+            <ul>
+                {% for job in suggested_jobs %}
+                    <li>{{ job }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+        
+        <section class="courses">
+            <h2><img src="{% static 'career_l.jpg' %}" alt="Courses Icon"> Recommended Courses:</h2>
+            <ul>
+                {% for course in suggested_courses %}
+                    <li>
+                        <strong>{{ course.name }}</strong>
+                        <p>{{ course.description }}</p>
+                        <p><a href="{{ course.url }}">Learn more</a></p>
+                    </li>
+                {% empty %}
+                    <li>No recommended courses available.</li>
+                {% endfor %}
+            </ul>
+        </section>
+        
+        <section class="job-info">
+            <h2><img src="{% static 'salary.jpeg' %}" alt="Job Info Icon"> Job Information for {{ suggested_jobs.0 }}:</h2>
+            <p>{{ job_info.description }}</p>
+            <p>Salary Range: {{ job_info.salary }}</p>
+        </section>
+
+        <!-- Download PDF Button -->
+        <button id="download-pdf">Download PDF</button>
+    </div>
+
+
+        
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var ctx = document.getElementById('careerChart').getContext('2d');
+            var careerChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [{% for category, score in career_scores.items %}'{{ category }}',{% endfor %}],
+                    datasets: [{
+                        label: 'Career Quiz Results',
+                        data: [{% for category, score in career_scores.items %}{{ score }},{% endfor %}],
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+    
+</body>
+</html>
