@@ -99,7 +99,8 @@
         
         <section class="personality">
             <h2><img src="{% static 'p_logo.jpg' %}" alt="Personality Icon"> Your Personality Type: {{ personality_type.code }}</h2>
-            <p>Description: {{ personality_type.description }}</p>
+            <p>Description: {{ description }}</p>
+            
         </section>
         
         <section class="career">
@@ -147,7 +148,7 @@
         
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+       document.addEventListener('DOMContentLoaded', function() {
             var ctx = document.getElementById('careerChart').getContext('2d');
             var careerChart = new Chart(ctx, {
                 type: 'bar',
@@ -163,11 +164,30 @@
                 },
                 options: {
                     scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
                     }
                 }
+            });
+
+            // Download PDF functionality
+            const downloadBtn = document.getElementById('download-pdf');
+
+            downloadBtn.addEventListener('click', function() {
+                const pdf = new jsPDF();
+                const container = document.querySelector('.container');
+
+                // Generate PDF from HTML
+                pdf.html(container, {
+                    callback: function (pdf) {
+                        pdf.save('combined_results.pdf');
+                    },
+                    x: 10,
+                    y: 10
+                });
             });
         });
     </script>
