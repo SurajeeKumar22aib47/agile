@@ -2086,9 +2086,13 @@ def careerquiz(request):
         job_info = get_job_information(suggested_jobs[0])  # Assuming the first job in the list
 
         # Combine results and render combined results page
+        text=personality_type.description
+        description=''.join(text.splitlines())
         combined_results = {
             'personality_type': personality_type,
+            'description':description,
             'technical_scores': technical_scores,
+            'career_scores': combined_scores,
             'non_technical_scores': non_technical_scores,
             'highest_score_category': highest_score_category,
             'suggested_jobs': suggested_jobs,
@@ -2408,7 +2412,7 @@ def get_suggested_jobs(category, score):
         job_info = get_job_information(job)
         job_info_list.append(job_info)
 
-    return job_info_list
+    return suggested_jobs
 
 
 def get_job_information(job_title):
@@ -2646,7 +2650,10 @@ def get_job_information(job_title):
             "salary": "$60,000 - $100,000 per year"
         }
     }
-
-    info = job_info.get(job_title)
+    if isinstance(job_title, dict):
+        # Example: Convert dictionary to a string or another hashable type
+        info = frozenset(job_title.items())
+    else:
+        info = job_info.get(job_title)
 
     return info
